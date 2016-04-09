@@ -1,5 +1,7 @@
 <html>
 <header>
+	<meta charset="utf-8"> 
+
 	<style type="text/css">
 		body {
 			margin: 40px auto;
@@ -14,15 +16,52 @@
 		h3 {
 			line-height: 1.2
 		}
+
+		.typing {
+			display: none;
+		}
 	</style>
 </header>
 
 
-<body>
-	<h1>
+<body class="typing">
+	<h1 class="typing">
 		El título.
 	</h1>
 	ola ke tal ;)
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/async/1.5.2/async.min.js"></script>
+	<script type="text/javascript">
+		function hasClass(element, cls) {
+		    return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+		}
+
+		function findTypingsTextsInOrder(elem) {
+			var res = [];
+			for (var i = 0; i < elem.childNodes.length; i++) {
+				if (elem.childNodes[i].nodeValue && hasClass(elem, "typing"))
+					res.push({node: elem.childNodes[i]});
+				else
+					res = res.concat(findTypingsTextsInOrder(elem.childNodes[i]));
+			}
+			return res;
+		}
+		var typings = findTypingsTextsInOrder(document.body);
+		for (var i = 0; i < typings.length; i++) {
+			typings[i].value = typings[i].node.data;
+			typings[i].node.data = "";
+		}
+
+		async.eachSeries(typings, function(el, callback) {
+			el.node.parentNode.style.display = "block";
+			async.eachSeries(el.value, function(let, callback2) {
+				el.node.data += let;
+				setTimeout(callback2, Math.random()*250);
+			}, callback);
+		}, function() {
+
+		});		
+	</script>
 </body>
 
 </html>
